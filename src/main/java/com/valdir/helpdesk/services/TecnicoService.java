@@ -24,7 +24,7 @@ public class TecnicoService {
 	private TecnicoRepository repository;
 	@Autowired
 	private PessoaRepository pessoaRepository;
-	@Autowired
+    @Autowired
 	private BCryptPasswordEncoder encoder;
 
 	public Tecnico findById(Integer id) {

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,6 +18,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.fasterxml.jackson.core.filter.TokenFilter;
 import com.valdir.helpdesk.security.JWTAuthenticationFilter;
 import com.valdir.helpdesk.security.JWTAuthorizationFilter;
 import com.valdir.helpdesk.security.JWTUtil;
@@ -39,13 +41,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		if (Arrays.asList(env.getActiveProfiles()).contains("test")) {
 			http.headers().frameOptions().disable();
 		}
-
 		http.cors().and().csrf().disable();
 		http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
 		http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
 		http.authorizeRequests().antMatchers(PUBLIC_MATCHERS).permitAll().anyRequest().authenticated();
+		//http.authorizeRequests().antMatchers(HttpMethod.POST, "/login").permitAll();
 
+		//http.authorizeRequests().antMatchers("/login").permitAll().anyRequest().authenticated();  // Permite o acesso ao login sem autenticação
+		//http.authorizeRequests().anyRequest().authenticated();     // Exige autenticação para outros endpoint
+		
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+	
+	
+//		 http.authorizeRequests()
+//		    .antMatchers(HttpMethod.POST, "/auth").permitAll()
+//		    .anyRequest().authenticated()
+//		    .and().cors()
+//		    .and().csrf().disable()
+//		    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+//		    .and().addFilterBefore(new TokenFilter(tokenService,userRepository), UsernamePasswordAuthenticationFilter.class);
+	
 	}
 
 	@Override
